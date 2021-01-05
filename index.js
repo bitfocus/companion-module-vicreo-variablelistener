@@ -62,32 +62,9 @@ class instance extends instance_skel {
 			{
 				type: 'textinput',
 				id: 'tallyOnValue',
-				label: 'Tally On Value',
+				label: 'Tally On Value (also dynamic!)',
 				width: 6,
-				tooltip: 'When the variable equals this value, the camera tally light will be turned on.  Also supports dynamic variable references.  For example, $(atem:short_1)'
-			},
-			{
-				type: 'text',
-				id: 'tallyOnInfo',
-				width: 12,
-				label: 'Tally for shaders',
-				value: 'Set tally ON when the two variables matches'
-			},
-			{
-				type: 'checkbox',
-				id: 'tallyOnEnabled2',
-				width: 2,
-				label: 'Enable comparison',
-				default: false
-			},
-			{
-				type: 'dropdown',
-				id: 'tallyOnVariable2',
-				label: 'Tally Variable to compare',
-				width: 6,
-				tooltip: 'The instance label and variable name',
-				choices: dynamicVariableChoices,
-				minChoicesForSearch: 5
+				tooltip: 'When the variable equals this value, the camera tally light will be turned on.  Also supports dynamic variable references.  For example, $(atem:aux1)'
 			},
 			{
 				type: 'text',
@@ -119,53 +96,25 @@ class instance extends instance_skel {
 	};
 
 	tallyOnListener (label, variable, value) {
-		const { tallyOnVariable, tallyOnValue, tallyOnEnabled2, tallyOnVariable2, buttonBank, buttonButton } = this.config;
+		const { tallyOnVariable, tallyOnValue, buttonBank, buttonButton } = this.config;
 		this.status(this.STATUS_OK);
-
-		if(tallyOnEnabled2) {
-			if (`${label}:${variable}` != tallyOnVariable) {
-				if (`${label}:${variable}` != tallyOnVariable2) {
-					return;
-				} else {
-					this.setVariable('tallySource2', value);
-					this.value2 = value;
-				}
-			} else {
-				this.setVariable('tallySource', value);
-				this.value1 = value;
-			}
-
-			if(this.value1 == this.value2) {
-				this.setVariable('tallyOn', 'On')
-				if(!!buttonBank && !!buttonButton && buttonEnabled) {
-					this.press_button(buttonBank, buttonButton)
-				}
-			} else {
-			setTimeout(() => {
-				this.setVariable('tallyOn', 'Off')
-			}, this.release_time);
-			}
-			return;
-		}
 
 		if (`${label}:${variable}` != tallyOnVariable) {
 			return;
 		}
-
 		this.setVariable('tallySource', value);
-		if (value == tallyOnValue) {
-			this.setVariable('tallyOn', 'On')
-				if(!!buttonBank && !!buttonButton && buttonEnabled) {
-					this.press_button(buttonBank, buttonButton)
-				}
-		} else {
-			setTimeout(() => {
-				this.setVariable('tallyOn', 'Off')
-			}, this.release_time);
-		}
-		
-		
-
+		this.system.emit('variable_parse', tallyOnValue, (parsedValue) => {
+			if (value == parsedValue) {
+				this.setVariable('tallyOn', 'On')
+					if(!!buttonBank && !!buttonButton && buttonEnabled) {
+						this.press_button(buttonBank, buttonButton)
+					}
+			} else {
+				setTimeout(() => {
+					this.setVariable('tallyOn', 'Off')
+				}, this.release_time);
+			}
+		});
 
 		// internal action
 		// this.system.emit('action_run', {
@@ -197,17 +146,11 @@ class instance extends instance_skel {
 	}
 
 	setInitialVariables() {
-		const { tallyOnVariable, tallyOnVariable2 } = this.config;
+		const { tallyOnVariable } = this.config;
 		if(!!tallyOnVariable){
 			let pos = tallyOnVariable.search(":");
 			this.system.emit('variable_get', tallyOnVariable.slice(0, pos), tallyOnVariable.slice(pos+1), (value) => {
 				this.setVariable('tallySource', value);
-			})
-		}
-		if(!!tallyOnVariable2){
-			let pos2 = tallyOnVariable2.search(":");
-			this.system.emit('variable_get', tallyOnVariable2.slice(0, pos2), tallyOnVariable2.slice(pos2+1), (value) => {
-				this.setVariable('tallySource2', value);
 			})
 		}
 		this.setVariable('tallyOn', "off");
@@ -231,7 +174,6 @@ class instance extends instance_skel {
 	init_variables() {
 		var variables = [];
 		variables.push({ name: 'tallySource', label: 'Tally source' });
-		variables.push({ name: 'tallySource2', label: 'Tally source 2' });
 		variables.push({ name: 'tallyOn', label: 'Tally on' });
 		this.setVariableDefinitions(variables);
 	};
