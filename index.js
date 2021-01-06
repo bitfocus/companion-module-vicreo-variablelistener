@@ -83,20 +83,20 @@ class instance extends instance_skel {
 			{
 				type: 'textinput',
 				id: 'buttonBank',
-				label: 'Bank/Page',
+				label: 'Page',
 				width: 2
 			},
 			{
 				type: 'textinput',
 				id: 'buttonButton',
-				label: 'Button',
+				label: 'Bank',
 				width: 2
 			},
 		]
 	};
 
 	tallyOnListener (label, variable, value) {
-		const { tallyOnVariable, tallyOnValue, buttonBank, buttonButton } = this.config;
+		const { tallyOnVariable, tallyOnValue, buttonBank, buttonButton, buttonEnabled } = this.config;
 		this.status(this.STATUS_OK);
 
 		if (`${label}:${variable}` != tallyOnVariable) {
