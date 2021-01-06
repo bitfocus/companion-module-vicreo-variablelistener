@@ -81,14 +81,40 @@ class instance extends instance_skel {
 				default: false
 			},
 			{
+				type: 'text',
+				id: 'tallyOnInfo_on',
+				width: 12,
+				label: 'Action',
+				value: 'When Tally on, which button to press'
+			},
+			{
 				type: 'textinput',
-				id: 'buttonBank',
+				id: 'buttonPage_on',
 				label: 'Page',
 				width: 2
 			},
 			{
 				type: 'textinput',
-				id: 'buttonButton',
+				id: 'buttonBank_on',
+				label: 'Bank',
+				width: 2
+			},
+			{
+				type: 'text',
+				id: 'tallyOnInfo_off',
+				width: 12,
+				label: 'Action',
+				value: 'When Tally off, which button to press'
+			},
+			{
+				type: 'textinput',
+				id: 'buttonPage_off',
+				label: 'Page',
+				width: 2
+			},
+			{
+				type: 'textinput',
+				id: 'buttonBank_off',
 				label: 'Bank',
 				width: 2
 			},
@@ -96,7 +122,7 @@ class instance extends instance_skel {
 	};
 
 	tallyOnListener (label, variable, value) {
-		const { tallyOnVariable, tallyOnValue, buttonBank, buttonButton, buttonEnabled } = this.config;
+		const { tallyOnVariable, tallyOnValue, buttonBank_on, buttonPage_on, buttonBank_off, buttonPage_off, buttonEnabled } = this.config;
 		this.status(this.STATUS_OK);
 
 		if (`${label}:${variable}` != tallyOnVariable) {
@@ -106,12 +132,15 @@ class instance extends instance_skel {
 		this.system.emit('variable_parse', tallyOnValue, (parsedValue) => {
 			if (value == parsedValue) {
 				this.setVariable('tallyOn', 'On')
-					if(!!buttonBank && !!buttonButton && buttonEnabled) {
-						this.press_button(buttonBank, buttonButton)
+					if(!!buttonPage_on && !!buttonBank_on && buttonEnabled) {
+						this.press_button(buttonPage_on, buttonBank_on)
 					}
 			} else {
 				setTimeout(() => {
 					this.setVariable('tallyOn', 'Off')
+					if(!!buttonBank_off && !!buttonPage_off && buttonEnabled) {
+						this.press_button(buttonPage_off, buttonBank_off)
+					}
 				}, this.release_time);
 			}
 		});
