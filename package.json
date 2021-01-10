@@ -11,7 +11,7 @@
 		"Tally listener"
 	],
 	"shortname": "Variable to Tally listener",
-	"description": "Companion module for Grabbing Tally info from ATEM",
+	"description": "Companion module for Grabbing a variable and create Tally",
 	"main": "index.js",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1"
