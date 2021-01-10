@@ -124,9 +124,11 @@ class instance extends instance_skel {
 	tallyOnListener (label, variable, value) {
 		const { tallyOnVariable, tallyOnValue, buttonBank_on, buttonPage_on, buttonBank_off, buttonPage_off, buttonEnabled } = this.config;
 		this.status(this.STATUS_OK);
-
+		
 		if (`${label}:${variable}` != tallyOnVariable) {
-			return;
+			if (`${label}:${variable}` != tallyOnValue) {
+				return;
+			}
 		}
 		this.setVariable('tallySource', value);
 		this.system.emit('variable_parse', tallyOnValue, (parsedValue) => {
