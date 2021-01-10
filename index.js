@@ -64,7 +64,7 @@ class instance extends instance_skel {
 				id: 'tallyOnValue',
 				label: 'Tally On Value (also dynamic!)',
 				width: 6,
-				tooltip: 'When the variable equals this value, the camera tally light will be turned on.  Also supports dynamic variable references.  For example, $(atem:aux1)'
+				tooltip: 'When the variable equals this value, the camera tally light will be turned on.  Also supports dynamic variable references.  For example; atem:aux1_input'
 			},
 			{
 				type: 'text',
@@ -124,29 +124,43 @@ class instance extends instance_skel {
 	tallyOnListener (label, variable, value) {
 		const { tallyOnVariable, tallyOnValue, buttonBank_on, buttonPage_on, buttonBank_off, buttonPage_off, buttonEnabled } = this.config;
 		this.status(this.STATUS_OK);
-		
-		if (`${label}:${variable}` != tallyOnVariable) {
-			if (`${label}:${variable}` != tallyOnValue) {
-				return;
-			}
-		}
-		this.setVariable('tallySource', value);
-		this.system.emit('variable_parse', tallyOnValue, (parsedValue) => {
-			if (value == parsedValue) {
-				this.setVariable('tallyOn', 'On')
+		if (`${label}:${variable}` == tallyOnVariable) {
+			this.setVariable('tallyVariable', value);
+			this.system.emit('variable_parse', tallyOnValue, (parsedValue) => {
+				this.setVariable('tallyValue', parsedValue);
+				if (value == parsedValue) {
+					this.setVariable('tallyOn', 'On')
 					if(!!buttonPage_on && !!buttonBank_on && buttonEnabled) {
 						this.press_button(buttonPage_on, buttonBank_on)
 					}
-			} else {
-				setTimeout(() => {
-					this.setVariable('tallyOn', 'Off')
-					if(!!buttonBank_off && !!buttonPage_off && buttonEnabled) {
-						this.press_button(buttonPage_off, buttonBank_off)
+				} else {
+					setTimeout(() => {
+						this.setVariable('tallyOn', 'Off')
+						if(!!buttonBank_off && !!buttonPage_off && buttonEnabled) {
+							this.press_button(buttonPage_off, buttonBank_off)
+						}
+					}, this.release_time);
+				}
+			});
+		} else if (`$(${label}:${variable})` == tallyOnValue) {
+			this.setVariable('tallyValue', value);
+			this.system.emit('variable_parse', "$("+tallyOnVariable +")", (parsedValue) => {
+				this.setVariable('tallyVariable', parsedValue);
+				if (value == parsedValue) {
+					this.setVariable('tallyOn', 'On')
+					if(!!buttonPage_on && !!buttonBank_on && buttonEnabled) {
+						this.press_button(buttonPage_on, buttonBank_on)
 					}
-				}, this.release_time);
-			}
-		});
-
+				} else {
+					setTimeout(() => {
+						this.setVariable('tallyOn', 'Off')
+						if(!!buttonBank_off && !!buttonPage_off && buttonEnabled) {
+							this.press_button(buttonPage_off, buttonBank_off)
+						}
+					}, this.release_time);
+				}
+			});
+		}
 		// internal action
 		// this.system.emit('action_run', {
 		// 	action: (value === parsedValue ? 'tallyOn' : 'tallyOff'),
@@ -177,12 +191,17 @@ class instance extends instance_skel {
 	}
 
 	setInitialVariables() {
-		const { tallyOnVariable } = this.config;
+		const { tallyOnVariable, tallyOnValue } = this.config;
 		if(!!tallyOnVariable){
 			let pos = tallyOnVariable.search(":");
 			this.system.emit('variable_get', tallyOnVariable.slice(0, pos), tallyOnVariable.slice(pos+1), (value) => {
-				this.setVariable('tallySource', value);
+				this.setVariable('tallyVariable', value);
 			})
+		}
+		if(!!tallyOnValue){
+			this.system.emit('variable_parse', tallyOnValue, (parsedValue) => {
+				this.setVariable('tallyValue', parsedValue);
+			});
 		}
 		this.setVariable('tallyOn', "off");
 	}
@@ -204,7 +223,8 @@ class instance extends instance_skel {
 
 	init_variables() {
 		var variables = [];
-		variables.push({ name: 'tallySource', label: 'Tally source' });
+		variables.push({ name: 'tallyVariable', label: 'Tally variable' });
+		variables.push({ name: 'tallyValue', label: 'Tally value' });
 		variables.push({ name: 'tallyOn', label: 'Tally on' });
 		this.setVariableDefinitions(variables);
 	};
