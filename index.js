@@ -18,7 +18,7 @@ class instance extends instance_skel {
 	}
 
 	actions(system) {
-		this.setActions(this.getActions());
+		// this.setActions(this.getActions());
 	}
 
 	// Return config fields for instance config
@@ -41,19 +41,19 @@ class instance extends instance_skel {
 				id: 'info',
 				width: 12,
 				label: 'Information',
-				value: 'This module controls checks variable for tally'
+				value: 'This module checks variables and presses a button'
 			},
 			{
 				type: 'text',
 				id: 'tallyOnInfo',
 				width: 12,
-				label: 'Tally On (Basic)',
-				value: 'Set tally ON when the variable from an other instance equals the value'
+				label: 'Criteria',
+				value: 'When the variable from an instance equals the value'
 			},
 			{
 				type: 'dropdown',
 				id: 'tallyOnVariable',
-				label: 'Tally On Variable',
+				label: 'Variable',
 				width: 6,
 				tooltip: 'The instance label and variable name',
 				choices: dynamicVariableChoices,
@@ -62,22 +62,23 @@ class instance extends instance_skel {
 			{
 				type: 'textinput',
 				id: 'tallyOnValue',
-				label: 'Tally On Value (also dynamic!)',
+				label: 'Value (also dynamic!)',
 				width: 6,
-				tooltip: 'When the variable equals this value, the camera tally light will be turned on.  Also supports dynamic variable references.  For example; atem:aux1_input'
+				default: 'atem:aux1_input',
+				tooltip: 'Also supports dynamic variable references.  For example; atem:aux1_input'
 			},
 			{
 				type: 'text',
 				id: 'tallyOnInfo',
 				width: 12,
 				label: 'Action',
-				value: 'When Tally is on press a button on the streamdeck'
+				value: 'When equal press a button on the streamdeck'
 			},
 			{
 				type: 'checkbox',
 				id: 'buttonEnabled',
 				width: 2,
-				label: 'Enable press on button when tally',
+				label: 'Enable press on button when equal',
 				default: false
 			},
 			{
@@ -85,7 +86,7 @@ class instance extends instance_skel {
 				id: 'tallyOnInfo_on',
 				width: 12,
 				label: 'Action',
-				value: 'When Tally on, which button to press'
+				value: 'When equal, which button to press'
 			},
 			{
 				type: 'textinput',
@@ -104,7 +105,7 @@ class instance extends instance_skel {
 				id: 'tallyOnInfo_off',
 				width: 12,
 				label: 'Action',
-				value: 'When Tally off, which button to press'
+				value: 'When not equal, which button to press'
 			},
 			{
 				type: 'textinput',
@@ -223,9 +224,9 @@ class instance extends instance_skel {
 
 	init_variables() {
 		var variables = [];
-		variables.push({ name: 'tallyVariable', label: 'Tally variable' });
-		variables.push({ name: 'tallyValue', label: 'Tally value' });
-		variables.push({ name: 'tallyOn', label: 'Tally on' });
+		variables.push({ name: 'tallyVariable', label: 'Variable' });
+		variables.push({ name: 'tallyValue', label: 'Value' });
+		variables.push({ name: 'tallyOn', label: 'Equal' });
 		this.setVariableDefinitions(variables);
 	};
 
