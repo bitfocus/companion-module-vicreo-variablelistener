@@ -1,7 +1,7 @@
 ## VICREO Tally listener
 
 You can let this module work as a Tally light based on a selection of a variable. You select a variable you would like to have Tally on, like `atem:pgm1_input`.
-Then put a value in the `Tally on Value` box like `CAM1`. Now your Blink will turn RED when your `atem:pgm1`_input variable hits CAM1 (so when pressing camera 1 on your ATEM mixer).
+Then put a value in the `Tally on Value` box like `CAM1`. 
 
 You can also compare against a variable. So if you want to know if your AUX1 has the same source as your PGM, type `atem:aux1_input` in the Tally On Value box.
 
