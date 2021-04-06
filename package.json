@@ -8,10 +8,10 @@
 	],
 	"manufacturer": "VICREO",
 	"product": [
-		"Tally listener"
+		"Variable listener"
 	],
-	"shortname": "Variable to Tally listener",
-	"description": "Companion module for Grabbing a variable and create Tally",
+	"shortname": "Variable listener",
+	"description": "Companion module for Grabbing a variable and create button press",
 	"main": "index.js",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1"
