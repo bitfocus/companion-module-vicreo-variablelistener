@@ -122,61 +122,61 @@ class instance extends instance_skel {
 		]
 	};
 
-	tallyOnListener (label, variable, value) {
+	tallyOnListener(variables) {
 		const { tallyOnVariable, tallyOnValue, buttonBank_on, buttonPage_on, buttonBank_off, buttonPage_off, buttonEnabled } = this.config;
 		this.status(this.STATUS_OK);
-		if (`${label}:${variable}` == tallyOnVariable) {
-			this.setVariable('tallyVariable', value);
-			this.system.emit('variable_parse', tallyOnValue, (parsedValue) => {
-				this.setVariable('tallyValue', parsedValue);
-				if (value == parsedValue) {
-					this.setVariable('tallyOn', 'On')
-					if(!!buttonPage_on && !!buttonBank_on && buttonEnabled) {
-						this.press_button(buttonPage_on, buttonBank_on)
-					}
-				} else {
-					setTimeout(() => {
-						this.setVariable('tallyOn', 'Off')
-						if(!!buttonBank_off && !!buttonPage_off && buttonEnabled) {
-							this.press_button(buttonPage_off, buttonBank_off)
+		for (var key in variables) {
+			if (variables.hasOwnProperty(key)) {
+				// debug(key + " -> " + variables[key]);
+				if (key == tallyOnVariable) {
+					this.setVariable('tallyVariable', variables[key]);
+					this.system.emit('variable_parse', tallyOnValue, (parsedValue) => {
+						this.setVariable('tallyValue', parsedValue);
+						if (variables[key] == parsedValue) {
+							this.setVariable('tallyOn', 'On')
+							if (!!buttonPage_on && !!buttonBank_on && buttonEnabled) {
+								this.press_button(buttonPage_on, buttonBank_on)
+							}
+						} else {
+							setTimeout(() => {
+								this.setVariable('tallyOn', 'Off')
+								if (!!buttonBank_off && !!buttonPage_off && buttonEnabled) {
+									this.press_button(buttonPage_off, buttonBank_off)
+								}
+							}, this.release_time);
 						}
-					}, this.release_time);
-				}
-			});
-		} else if (`$(${label}:${variable})` == tallyOnValue) {
-			this.setVariable('tallyValue', value);
-			this.system.emit('variable_parse', "$("+tallyOnVariable +")", (parsedValue) => {
-				this.setVariable('tallyVariable', parsedValue);
-				if (value == parsedValue) {
-					this.setVariable('tallyOn', 'On')
-					if(!!buttonPage_on && !!buttonBank_on && buttonEnabled) {
-						this.press_button(buttonPage_on, buttonBank_on)
-					}
-				} else {
-					setTimeout(() => {
-						this.setVariable('tallyOn', 'Off')
-						if(!!buttonBank_off && !!buttonPage_off && buttonEnabled) {
-							this.press_button(buttonPage_off, buttonBank_off)
+					});
+				} else if (key == tallyOnValue) {
+					this.setVariable('tallyValue', variables[key]);
+					this.system.emit('variable_parse', "$(" + tallyOnVariable + ")", (parsedValue) => {
+						this.setVariable('tallyVariable', parsedValue);
+						if (variables[key] == parsedValue) {
+							this.setVariable('tallyOn', 'On')
+							if (!!buttonPage_on && !!buttonBank_on && buttonEnabled) {
+								this.press_button(buttonPage_on, buttonBank_on)
+							}
+						} else {
+							setTimeout(() => {
+								this.setVariable('tallyOn', 'Off')
+								if (!!buttonBank_off && !!buttonPage_off && buttonEnabled) {
+									this.press_button(buttonPage_off, buttonBank_off)
+								}
+							}, this.release_time);
 						}
-					}, this.release_time);
+					});
 				}
-			});
+			}
 		}
-		// internal action
-		// this.system.emit('action_run', {
-		// 	action: (value === parsedValue ? 'tallyOn' : 'tallyOff'),
-		// 	instance: this.id
-		// });
 	}
 
 	setupEventListeners() {
 		if (this.activeTallyOnListener) {
-			this.system.removeListener('variable_changed', this.activeTallyOnListener);
+			this.system.removeListener('variables_changed', this.activeTallyOnListener);
 			delete this.activeTallyOnListener;
 		}
 		if (this.config.tallyOnVariable) {
-				this.activeTallyOnListener = this.tallyOnListener.bind(this);
-				this.system.on('variable_changed', this.activeTallyOnListener);
+			this.activeTallyOnListener = this.tallyOnListener.bind(this);
+			this.system.on('variables_changed', this.activeTallyOnListener);
 		}
 	}
 
@@ -193,13 +193,13 @@ class instance extends instance_skel {
 
 	setInitialVariables() {
 		const { tallyOnVariable, tallyOnValue } = this.config;
-		if(!!tallyOnVariable){
+		if (!!tallyOnVariable) {
 			let pos = tallyOnVariable.search(":");
-			this.system.emit('variable_get', tallyOnVariable.slice(0, pos), tallyOnVariable.slice(pos+1), (value) => {
+			this.system.emit('variable_get', tallyOnVariable.slice(0, pos), tallyOnVariable.slice(pos + 1), (value) => {
 				this.setVariable('tallyVariable', value);
 			})
 		}
-		if(!!tallyOnValue){
+		if (!!tallyOnValue) {
 			this.system.emit('variable_parse', tallyOnValue, (parsedValue) => {
 				this.setVariable('tallyValue', parsedValue);
 			});
