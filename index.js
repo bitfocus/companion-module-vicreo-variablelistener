@@ -217,7 +217,7 @@ class instance extends instance_skel {
 	// When module gets deleted
 	destroy() {
 		if (this.activeTallyOnListener) {
-			this.system.removeListener('variable_changed', this.activeTallyOnListener);
+			this.system.removeListener('variables_changed', this.activeTallyOnListener);
 			delete this.activeTallyOnListener;
 		}
 	}
