@@ -17,5 +17,13 @@
 		"test": "echo \"Error: no test specified\" && exit 1"
 	},
 	"author": "Jeffrey Davidsz <jeffrey.davidsz@vicreo.eu>",
-	"license": "MIT"
+	"license": "MIT",
+	"homepage": "https://github.com/bitfocus/companion-module-vicreo-variablelistener#readme",
+	"bugs": {
+		"url": "https://github.com/bitfocus/companion-module-vicreo-variablelistener/issues"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/bitfocus/companion-module-vicreo-variablelistener.git"
+	}
 }
